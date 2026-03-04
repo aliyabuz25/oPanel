@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Documentation Template</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #111827;
+      --text: #e5e7eb;
+      --muted: #94a3b8;
+      --accent: #22d3ee;
+      --line: #1f2937;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Arial, sans-serif;
+      background: linear-gradient(160deg, #020617 0%, #0f172a 60%, #111827 100%);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 32px 20px 64px;
+    }
+
+    .hero {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 24px;
+      background: rgba(17, 24, 39, 0.9);
+      margin-bottom: 24px;
+    }
+
+    h1, h2, h3 { margin-top: 0; }
+    h1 { font-size: 2rem; margin-bottom: 10px; }
+    h2 { font-size: 1.25rem; margin-bottom: 12px; }
+    p  { margin: 0 0 10px; }
+
+    .muted { color: var(--muted); }
+    .accent { color: var(--accent); }
+
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 18px;
+      background: rgba(2, 6, 23, 0.7);
+      margin-bottom: 16px;
+    }
+
+    code {
+      background: #0b1220;
+      border: 1px solid #1e293b;
+      border-radius: 6px;
+      padding: 2px 6px;
+      color: #67e8f9;
+    }
+
+    ul { margin: 0; padding-left: 20px; }
+    .badge {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 999px;
+      border: 1px solid #164e63;
+      color: #67e8f9;
+      font-size: 12px;
+      margin-bottom: 8px;
+    }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <section class="hero">
+      <span class="badge">EDITABLE TEMPLATE</span>
+      <h1>Project Documentation Index</h1>
+      <p class="muted">
+        Bu dosya ornek bir <code>index.html</code> sablonudur.
+        Icerikleri dogrudan bu dosyada degistirebilirsin.
+      </p>
+      <p>
+        Dosya yolu: <code>public/example-index.html</code>
+      </p>
+    </section>
+
+    <section class="card">
+      <h2 class="accent">1. Proje Ozeti</h2>
+      <p>
+        Buraya panelin ne yaptigini, kimlerin kullandigini ve ana amaci yaz.
+      </p>
+    </section>
+
+    <section class="card">
+      <h2 class="accent">2. Hizli Linkler</h2>
+      <ul>
+        <li>Admin Panel: <code>/admin/</code></li>
+        <li>API Health: <code>/api/health</code></li>
+        <li>DB Admin: <code>/dbadmin/</code> (deploy ortamina gore)</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2 class="accent">3. Degistirilecek Alanlar</h2>
+      <p>Asagidaki satirlari kendi metninle degistir:</p>
+      <ul>
+        <li>Baslik</li>
+        <li>Aciklama</li>
+        <li>Kurulum adimlari</li>
+        <li>Sorumlu kisiler</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2 class="accent">4. Ornek Komutlar</h2>
+      <p><code>npm install</code></p>
+      <p><code>npm run sys</code></p>
+    </section>
+  </main>
+</body>
+</html>
