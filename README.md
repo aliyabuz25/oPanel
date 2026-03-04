@@ -1,60 +1,51 @@
-# oPanel Admin-Only
+# oPanel (Admin Only)
 
-Bu proje admin panel + backend API mimarisiyle calisir.
-Public frontend yoktur. Docker kullanilmaz.
+Bu repo sadece admin paneli ve API backend'i icin var.
+Public site tarafi yok, Docker da yok.
 
-## 1. Mimari Ozeti
+Kisaca mimari:
+- Admin arayuzu: React + Vite (`src/`)
+- API: Express (`server/index.cjs`)
+- Veri/json dosyalari: `public/`
+- Upload klasoru: `public/uploads/`
 
-- Admin UI: React + Vite (`src/`)
-- Backend API: Express + MySQL (`server/index.cjs`)
-- Veri dosyalari: `public/` altinda JSON
-- Upload yolu: `public/uploads`
+---
 
-Canli ortamlarda panelin API cagrilari `'/api/*'` oldugu icin panelin acildigi domainde ayni origin altinda `/api` endpointi calismalidir.
+## Lokal Calistirma
 
-## 2. Lokal Gelistirme
-
-Gereksinimler:
-
+### Gerekenler
 - Node.js 20+
 - MySQL 8+
 
-Kurulum:
-
+### Kurulum
 ```bash
 npm install
 ```
 
-Calistirma:
-
+### Gelistirme modunda calistir
 ```bash
 npm run dev
 ```
+Bu komut hem paneli hem backend'i birlikte aciyor.
 
-Bu komut iki sureci birlikte calistirir:
-
-- `vite` (admin panel)
-- `node server/index.cjs` (API)
-
-Ayrik calistirmak icin:
-
+Ayrica istersen ayri ayri da calistirabilirsin:
 ```bash
-npm run sys        # sadece admin panel (Vite)
-npm run dev:server # sadece backend API
+npm run sys        # sadece panel (Vite)
+npm run dev:server # sadece backend
 ```
 
-Build ve kalite:
-
+Kontrol komutlari:
 ```bash
 npm run build
 npm run lint
 ```
 
-## 3. Ortam Degiskenleri (.env)
+---
 
-Kok dizinde `.env` dosyasi olusturun.
+## .env Ayarlari
 
-Ornek:
+Proje kokune `.env` dosyasi koy.
+Asagidaki ornegi baz al:
 
 ```env
 PORT=5000
@@ -66,12 +57,12 @@ MYSQL_DATABASE=opanel_db
 
 JWT_SECRET=change_this_to_a_long_random_secret
 
-# Opsiyonel
+# Opsiyonel (vermezsen default path'ler kullanilir)
 WEB_DATA_DIR=/home/CPANEL_USER/opanel/public
 ADMIN_PUBLIC_DIR=/home/CPANEL_USER/opanel/public
 UPLOAD_DIR=/home/CPANEL_USER/opanel/public/uploads
 
-# Opsiyonel servisler
+# Mail / bildirim (opsiyonel)
 SMTP_ENABLED=1
 SMTP_HOST=smtp.example.com
 SMTP_PORT=587
@@ -81,160 +72,139 @@ SMTP_PASS=...
 SMTP_FROM=notify@example.com
 SMTP_TO=team@example.com
 
+# Ceviri servisi (opsiyonel)
 LIBRETRANSLATE_URL=http://127.0.0.1:5001/translate
 LIBRETRANSLATE_API_KEY=
 LIBRETRANSLATE_TIMEOUT_MS=15000
 
+# WhatsApp servis ayarlari (opsiyonel)
 WHATSAPP_ENABLED=1
 WHATSAPP_API_ENDPOINT=https://hubmsgpanel.octotech.az/api/message
 WHATSAPP_API_KEY=
 ORGANIZER_WHATSAPP_TO=
 ```
 
-Notlar:
+Onemli not:
+- `MYSQL_PASSWORD` ve `JWT_SECRET` bos olmasin.
 
-- `MYSQL_PASSWORD` ve `JWT_SECRET` bos birakilmamalidir.
-- `WEB_DATA_DIR`, `ADMIN_PUBLIC_DIR`, `UPLOAD_DIR` verilmezse backend kendi varsayilan yolunu kullanir.
+---
 
-## 4. cPanel Uretim Deploy Rehberi
+## cPanel'e Atma (Gercek Deploy Akisi)
 
-Bu bolum cPanel `Setup Node.js App` uzerinden canliya cikis icindir.
+Bu kisim "Setup Node.js App" kullanan klasik cPanel sunucular icin.
 
-### 4.1 Hazirlik
+### 1) Once cPanel tarafini hazirla
+- Bir MySQL database ac
+- Bir MySQL user ac
+- User'a DB yetkilerini ver (ALL PRIVILEGES)
 
-1. cPanel'de su kaynaklari olusturun:
-- 1 adet MySQL database
-- 1 adet MySQL user
-- User -> database yetkileri (ALL PRIVILEGES)
+### 2) Projeyi sunucuya yukle
+Ornek klasor:
+`/home/CPANEL_USER/opanel`
 
-2. Domain plani:
-- Panelin acildigi domaine gelen `/api` istekleri Node app'e gitmelidir.
-- Panel statik dosyalari ve API ayni origin altinda olmali (CORS/proxy karmasasi yasamamak icin).
-
-### 4.2 Dosyalari Sunucuya Yukleme
-
-1. Projeyi sunucuda bir dizine koyun:
-- Ornek: `/home/CPANEL_USER/opanel`
-
-2. Sunucuda komut calistirin:
-
+Sonra SSH'ta:
 ```bash
 cd /home/CPANEL_USER/opanel
 npm install
 npm run build
 ```
 
-Build ciktilari `dist/` altina uretilir.
-
-### 4.3 Node.js App Olusturma (cPanel)
-
-cPanel -> `Setup Node.js App`:
-
-- Node version: 20+ (mecburen 18 ise test ederek)
+### 3) cPanel -> Setup Node.js App
+Asagidaki gibi tanimla:
+- Node version: 20+ (mecbur kalirsan 18 deneyebilirsin)
 - Application mode: `Production`
 - Application root: `opanel`
-- Application URL: API'yi tasiyacagi path/domain
-- Application startup file: `server/index.cjs`
+- Startup file: `server/index.cjs`
 
 Sonra:
-
-- `Environment Variables` kismina `.env` degerlerini girin
+- Environment Variables kismina `.env` degerlerini gir
 - `Run NPM Install`
 - `Restart App`
 
-### 4.4 Admin Paneli Yayina Alma
+### 4) Admin panelini yayinla
+Build dosyalari `dist/` icine cikar.
 
-Bu proje admin UI'yi `dist/` klasorune build eder.
+Temiz yol su:
+- `dist/` icerigini web root'a koy
+- Ayni domain altinda `/api` isteklerini Node app'e yonlendir
 
-Secenek A (onerilen):
+Neden?
+Panel kodu API'yi `'/api/*'` diye cagiriyor. Yani ayni origin calismasi en sorunsuz hali.
 
-- Paneli API ile ayni domaine yayinlayin.
-- `dist/` icerigini ilgili web root'a kopyalayin.
-- `/api` path'ini Node app'e reverse proxy edin.
-
-Secenek B:
-
-- Ayrik domain/subdomain kullanacaksaniz panelin API base yolunu ayni origin `/api` olacak sekilde routing/proxy ile cozmeyi unutmayin.
-
-### 4.5 Upload ve Yazma Izinleri
-
-Backend su klasorlere yazabilir olmalidir:
-
+### 5) Yazma izinleri
+Backend su klasorlere yazabiliyor olmali:
 - `public/`
 - `public/uploads/`
 
-Sunucuda izinleri kontrol edin (cpanel kullanicisina ait olmali).
+Izinleri cPanel kullanicisi sahip olacak sekilde ayarla.
 
-## 5. Veritabani ve Ilk Acilis
+---
 
-Uygulama acilisinda backend otomatik olarak temel tablolari olusturur:
+## Ilk Acilis ve DB
 
+Backend acildiginda asagidaki tablolari otomatik olusturur:
 - `users`
 - `applications`
 - `site_content`
 
-Ilk giriste setup/login akisini admin panel uzerinden tamamlayin.
+Sonra panelden setup/login adimlarini tamamla.
 
-## 6. API Ozet
+Saglik kontrolu icin:
+- `GET /api/health`
 
-Temel endpointler:
+---
 
-- Saglik: `GET /api/health`
-- Login: `POST /api/login`
-- Setup: `POST /api/setup`
-- Icerik: `GET/POST /api/site-content`, `GET/POST /api/site-new-struct`
-- Medya: `POST /api/upload-image`
-- Basvurular: `/api/applications/*`
-- Sitemap: `GET /api/sitemap`
+## SIk Kullanilan API'ler
 
-## 7. Proje Komutlari
+- `GET /api/health`
+- `POST /api/login`
+- `POST /api/setup`
+- `GET/POST /api/site-content`
+- `GET/POST /api/site-new-struct`
+- `POST /api/upload-image`
+- `GET /api/sitemap`
+- `/api/applications/*`
 
-- `npm run dev`: backend + admin gelistirme
-- `npm run sys`: sadece admin panel (vite)
-- `npm run dev:server`: sadece backend
-- `npm run build`: production build
-- `npm run lint`: eslint kontrolu
+---
 
-## 8. Sorun Giderme
+## Sorun Giderme (Gercek Hayat Notlari)
 
-### 8.1 `/api` 404 veya 502
+### `/api` 404 veya 502
+- Node app calisiyor mu bak
+- cPanel app URL/proxy path dogru mu bak
+- `GET /api/health` donuyor mu test et
 
-- Node app ayakta mi kontrol edin.
-- cPanel application URL ve proxy/path ayarlari dogru mu kontrol edin.
-- `GET /api/health` ile dogrulayin.
+### Login oluyor ama veri gelmiyor
+- `MYSQL_*` degerlerini tekrar kontrol et
+- DB user yetkilerini kontrol et
+- Backend loglarinda baglanti hatasi var mi bak
 
-### 8.2 Login calisiyor ama kayitlar yok
+### Upload calismiyor
+- `public/uploads` yazma izni var mi bak
+- Disk quota dolu olabilir, kontrol et
 
-- `MYSQL_*` degiskenleri dogru mu kontrol edin.
-- DB kullanicisinin yetkilerini kontrol edin.
-- `server/index.cjs` loglarinda baglanti hatasini inceleyin.
+### Build sonrasi beyaz ekran
+- `dist/` tam kopyalandi mi kontrol et
+- `index.html` ve `assets/` ayni yerde mi bak
+- Tarayici cache temizleyip tekrar dene
 
-### 8.3 Upload basarisiz
+---
 
-- `public/uploads` yazma izni var mi kontrol edin.
-- Disk quota dolu mu kontrol edin.
+## Guvenlik Kisa Liste
 
-### 8.4 Build sonrasi bos sayfa
+- Guclu bir `JWT_SECRET` kullan
+- DB sifresini guclu tut
+- SSL kullan
+- Gereksiz acik port birakma
+- Duzenli DB + `public/` yedegi al
 
-- Build dosyalari eksiksiz kopyalandi mi kontrol edin.
-- `index.html` ile `assets/*` ayni dizinde olmali.
-- Tarayici cache temizleyin.
+---
 
-## 9. Guvenlik Kontrol Listesi
+## Projede En Cok Bakilan Dosyalar
 
-- `JWT_SECRET` guclu ve benzersiz olsun
-- DB sifresini guclu tutun
-- Uretimde debug/log seviyesini sinirlayin
-- Gereksiz portlari disariya acmayin
-- SSL zorunlu kullanin
-- Periyodik yedek alin (`public/` + DB dump)
-
-## 10. Faydali Dosyalar
-
-- Panel girisi: `src/App.tsx`
+- App girisi: `src/App.tsx`
 - Sidebar/menu: `src/components/Sidebar.tsx`
 - Icerik editoru: `src/pages/VisualEditor.tsx`
 - Backend: `server/index.cjs`
 - Sitemap: `public/sitemap.json`
-- Dokumantasyon sablonu: `public/example-index.html`
-
+- Ornek dokuman sayfasi: `public/example-index.html`
